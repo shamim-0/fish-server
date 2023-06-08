@@ -21,6 +21,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 const UserCollection = client.db("test").collection("user");
 const fishChartCollection = client.db("test").collection("fishChart");
+const venueCategoryCollection = client.db("test").collection("venueCategoryCollection");
 
 
 
@@ -80,7 +81,7 @@ async function run() {
 
         // get user by email 
 
-        app.get('/user_email', async (req, res)=>{
+        app.get('/user-email', async (req, res)=>{
             const email = req.query.email;
             const query = {email : email}
             const result = await UserCollection.findOne(query);
@@ -112,6 +113,37 @@ async function run() {
             // console.log(id)
         })
 
+
+
+
+
+        // venue 
+
+        // add category for venue
+        app.post('/venue-category-add', async (req, res)=>{
+            const data =  req.body;
+            const result = await venueCategoryCollection.insertOne(data);
+            res.send(result);
+        })
+        
+        // get venue category 
+
+        app.get('/venue-category-get', async (req, res)=>{
+            const query = {};
+            const data = venueCategoryCollection.find(query);
+            const result =await data.toArray();
+            res.send(result);
+        })
+  
+
+        // delete venue category 
+
+        app.delete('/venue-category-delete' , async (req, res)=> {
+            const _id = req.query._id;
+            const query = {_id: new ObjectId(_id)};
+            const result = await venueCategoryCollection.deleteOne(query);
+            res.send(result);
+        })
 
     } finally {
 
