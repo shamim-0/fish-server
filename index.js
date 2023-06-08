@@ -20,6 +20,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 // collection 
 
 const UserCollection = client.db("test").collection("user");
+const fishChartCollection = client.db("test").collection("fishChart");
 
 
 
@@ -85,6 +86,32 @@ async function run() {
             const result = await UserCollection.findOne(query);
             res.send(result);
         })
+        
+
+
+        // fish chart collection 
+        app.post('/fist_chart', async (req, res)=>{
+            const data = req.body;
+            const result = await fishChartCollection.insertOne(data);
+            res.send(result)
+        });
+
+        app.get('/fist_chart', async (req, res)=>{
+            const query = {};
+            const data = fishChartCollection.find(query);
+            const result =await data.toArray();
+            res.send(result);
+        })
+
+
+        app.delete('/fish_chart_delete', async (req, res)=>{
+            const id = req.query.id;
+            const query = {_id: new ObjectId(id)};
+            const result = await fishChartCollection.deleteOne(query);
+            res.send(result)
+            // console.log(id)
+        })
+
 
     } finally {
 
