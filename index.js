@@ -22,6 +22,8 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 const UserCollection = client.db("test").collection("user");
 const fishChartCollection = client.db("test").collection("fishChart");
 const venueCategoryCollection = client.db("test").collection("venueCategoryCollection");
+const venueSubCategoryCollection = client.db("test").collection("venueSubCategoryCollection");
+const venueCollection = client.db("test").collection("venueCollection");
 
 
 
@@ -144,6 +146,61 @@ async function run() {
             const result = await venueCategoryCollection.deleteOne(query);
             res.send(result);
         })
+
+
+        //
+
+
+
+
+
+        //  ---------------------------------------------------// add sub category for venue ----------------------------------------------------
+
+
+         app.post('/venue-sub-category-add', async (req, res)=>{
+            const data =  req.body;
+            const result = await venueSubCategoryCollection.insertOne(data);
+            res.send(result);
+        })
+        
+        // get venue category 
+
+        app.get('/venue-sub-category-get', async (req, res)=>{
+            const query = {};
+            const data = venueSubCategoryCollection.find(query);
+            const result =await data.toArray();
+            res.send(result);
+        })
+  
+
+        // delete venue category 
+
+        app.delete('/venue-sub-category-delete' , async (req, res)=> {
+            const _id = req.query._id;
+            const query = {_id: new ObjectId(_id)};
+            const result = await venueSubCategoryCollection.deleteOne(query);
+            res.send(result);
+        })
+
+
+
+        // ------------------------------------ venue collection ------------------------------------------------------------------------
+
+        app.post('/venue', async (req, res)=>{
+            const data = req.body;
+            const result  =  await venueCollection.insertOne(data);
+            res.send(result);
+        });
+
+        app.get('/venue', async (req, res)=>{
+            const query = {};
+            const data = venueCollection.find(query);
+            const result = await data.toArray();
+            res.send(result);
+        })
+
+
+
 
     } finally {
 
