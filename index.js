@@ -24,6 +24,9 @@ const fishChartCollection = client.db("test").collection("fishChart");
 const venueCategoryCollection = client.db("test").collection("venueCategoryCollection");
 const venueSubCategoryCollection = client.db("test").collection("venueSubCategoryCollection");
 const venueCollection = client.db("test").collection("venueCollection");
+const rejectVenueFeedBackCollection = client.db("test").collection("rejectVenueFeedBackCollection");
+const gameFishCategoryConnection = client.db("test").collection("gameFishCategoryConnection");
+const gameFishCollection = client.db("test").collection("gameFishCollection");
 
 
 
@@ -230,18 +233,20 @@ async function run() {
 
         //-------------------------------------------------------------------------- requested for catch and release fish data
         app.put('/test-venue', async (req, res) => {
-            const { _id } = req.query;
-            const data = {status: 'Applied For Tasting'}
+            const { _id, status } = req.query;
+            const message = req.body;
+            const data = {status: status}
             const query = { _id: new ObjectId(_id) };
             const options = { upsert: true };
             const updateDoc = {
                 $set: {
+                    message : message.message,
                     status: data.status,
                 }
             };
             const result = await venueCollection.updateOne(query, updateDoc, options);
             res.send(result)
-            console.log(data)
+            console.log(_id, status)
         })
 
 
@@ -254,8 +259,64 @@ async function run() {
             const data = await venueCollection.find(query).toArray();
             res.send(data);
           });
-          
 
+
+
+        //    venue  rejected feed back 
+
+        app.post('/reject-feed-back', async (req, res)=>{
+            const data = req.body;
+            const result =await rejectVenueFeedBackCollection.insertOne(data);
+            res.send(result);
+        })
+
+
+
+
+
+
+
+                //  ---------------------------------------------------// add game fish category for venue ----------------------------------------------------
+
+
+                app.post('/game-fish-category-post', async (req, res) => {
+                    const data = req.body;
+                    const result = await gameFishCategoryConnection.insertOne(data);
+                    res.send(result);
+                })
+        
+                // get venue category 
+        
+                app.get('/game-fish-category-get', async (req, res) => {
+                    const query = {};
+                    const data = gameFishCategoryConnection.find(query);
+                    const result = await data.toArray();
+                    res.send(result);
+                })
+        
+        
+                // delete venue category 
+        
+                app.delete('/game-fish-category-delete', async (req, res) => {
+                    const _id = req.query._id;
+                    const query = { _id: new ObjectId(_id) };
+                    const result = await gameFishCategoryConnection.deleteOne(query);
+                    res.send(result);
+                })
+
+
+
+
+                app.post('/game-fish-post', async (req, res)=>{
+                    const data = req.body;
+                    const result = await gameFishCollection.insertOne(data);
+                    res.send(result)
+                })
+                app.get('/game-fish-get', async (req, res)=>{
+                    const query = {};
+                    const result = await gameFishCollection.find(query).toArray();
+                    res.send(result)
+                })
 
 
 
